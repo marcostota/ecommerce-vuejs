@@ -1,78 +1,79 @@
 <template>
-    <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h3 class="pt-3">Add Category</h3>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-3"></div>
-            <div class="col-6">
-                <form>
-                    <div class="form-group">
-                        <label> Name</label>
-                        <input type="text" class="form-control" v-model="categoryName" />
-                    </div>
-                    <div class="form-group">
-                        <label> Description</label>
-                        <textarea type="text" class="form-control" v-model="description" />
-                    </div>
-                    <div class="form-group">
-                        <label> Image</label>
-                        <input type="text" class="form-control" v-model="imageUrl" />
-                    </div>
-                    <button type="button" class="btn btn-primary" @click="addCategory">Submit</button>
-                </form>
-            </div>
-            <div class="col-3"></div>
-
-        </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <h3 class="pt-3">Add Category</h3>
+      </div>
     </div>
+    <div class="row">
+      <div class="col-3"></div>
+      <div class="col-6">
+        <form>
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" class="form-control" v-model="categoryName" />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea type="text" class="form-control" v-model="description" />
+          </div>
+          <div class="form-group">
+            <label>Image</label>
+            <input type="text" class="form-control" v-model="imageURL" />
+          </div>
+          <button type="button" class="btn btn-primary" @click="addCategory">
+            Submit
+          </button>
+        </form>
+      </div>
+      <div class="col-3"></div>
+    </div>
+  </div>
 </template>
 <script>
-
-const axios = require('axios');
-const sweetalert = require('sweetalert')
+const axios = require("axios");
+const sweetalert = require("sweetalert");
 export default {
+  data() {
+    return {
+      categoryName: "",
+      description: "",
+      imageURL: "",
+    };
+  },
+  props: ["baseURL"],
+  mounted() {
+    console.log(this.baseURL);
+  },
+  methods: {
+    addCategory() {
+      console.log(this.categoryName, this.description);
+      const newCategory = {
+        categoryName: this.categoryName,
+        description: this.description,
+        imageURL: this.imageURL,
+      };
 
-    data() {
-        return {
-            categoryName: '',
-            description: '',
-            imageUrl: '',
-        }
+      axios({
+        method: "post",
+        url: `${this.baseURL}category/create`,
+        data: JSON.stringify(newCategory),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then(() => {
+          this.$emit("fetchData");
+          sweetalert({
+            text: "Category added successfully",
+            icon: "success",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
-    methods: {
-        addCategory() {
-            console.log(this.categoryName, this.description);
-            const newCategory = {
-                categoryName: this.categoryName,
-                description: this.description,
-                imageUrl: this.imageUrl
-            }
-
-            const baseUrl = 'http://localhost:8080';
-            axios({
-                method: 'post',
-                url: `${baseUrl}/category/create`,
-                data: JSON.stringify(newCategory),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(() => {
-                    sweetalert({
-                        text: 'Category added successfully',
-                        icon: 'success'
-                    })
-                }).catch((err) => {
-                    console.log(err)
-                })
-
-        }
-    }
-}
+  },
+};
 </script>
-
-
 <style scoped></style>
